@@ -1,0 +1,60 @@
+.order-details-page{ padding:20px 0; }
+
+.order-details-container{
+  max-width:1100px;
+  margin:0 auto;
+  padding:0 16px;
+}
+
+.details-grid{
+  display:grid;
+  grid-template-columns: 0.95fr 1.05fr;
+  gap:18px;
+}
+
+.details-card{
+  background:#fff;
+  border-radius:12px;
+  padding:18px;
+  box-shadow:0 6px 20px rgba(17,24,39,0.06);
+}
+
+.kv{ display:flex; flex-direction:column; gap:6px; padding:10px 0; border-bottom:1px solid #f3f4f6; }
+.k{ color:#6b7280; font-weight:900; font-size:12px; }
+.v{ font-weight:1000; }
+
+.status-pill{
+  display:inline-block;
+  background:#f3f4f6;
+  border-radius:999px;
+  padding:8px 12px;
+  font-weight:1000;
+}
+
+.status-sub{ margin-top:8px; font-weight:800; color:#374151; font-size:13px; }
+
+.items-list{ display:flex; flex-direction:column; gap:12px; }
+
+.order-item-row{
+  display:grid;
+  grid-template-columns: 70px 1fr auto;
+  gap:12px;
+  align-items:center;
+  padding:10px;
+  border:1px solid #f3f4f6;
+  border-radius:10px;
+}
+
+.oi-thumb{ width:70px; height:70px; object-fit:cover; border-radius:10px; }
+.oi-title{ font-weight:1000; }
+.oi-sub{ color:#374151; font-weight:800; font-size:13px; margin-top:4px; }
+.oi-total{ font-weight:1000; }
+
+.totals{ margin-top:14px; display:flex; flex-direction:column; gap:10px; }
+
+.total .v{ font-size:18px; }
+
+@media (max-width: 900px){
+  .details-grid{ grid-template-columns: 1fr; }
+}
+

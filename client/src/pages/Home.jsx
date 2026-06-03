@@ -14,8 +14,8 @@ const CATEGORY_ICONS = {
   Sports: "⚽",
   Books: "📚",
   Beauty: "💄",
-  Toys: "🧸",
-  Grocery: "🛒",
+  Accessories: "🎒",
+  "Mobile Accessories": "🔌",
 };
 
 function Home() {
@@ -321,12 +321,14 @@ function Home() {
           <div className="home-newsletter-inner">
             <div className="home-newsletter-content">
               <span className="section-eyebrow light">Stay Updated</span>
-              <h2 id="newsletter-heading">Join Our Newsletter</h2>
+              <h2 id="newsletter-heading">Join Future Basket Updates</h2>
+
               <p>
-                Be the first to know about flash sales, new arrivals, and member-only
-                discounts.
+                Discover premium products, exclusive deals, and member-only offers.
+                Whenever, Wherever.
               </p>
             </div>
+
             <form className="home-newsletter-form" onSubmit={handleNewsletter}>
               <input
                 type="email"

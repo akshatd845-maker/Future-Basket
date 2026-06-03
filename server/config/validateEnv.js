@@ -1,4 +1,10 @@
-const requiredEnvVars = ["MONGO_URI", "JWT_SECRET", "JWT_REFRESH_SECRET"];
+const requiredEnvVars = [
+  "MONGO_URI",
+  "JWT_SECRET",
+  "JWT_REFRESH_SECRET",
+  "RAZORPAY_KEY_ID",
+  "RAZORPAY_KEY_SECRET",
+];
 
 function validateEnv() {
   const missing = requiredEnvVars.filter((key) => {

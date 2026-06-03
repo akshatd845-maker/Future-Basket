@@ -1,53 +1,268 @@
-.orders-page{ padding: 20px 0; }
+/* Orders list styles */
+.orders-page {
+  width: 100%;
+  min-height: calc(100vh - 200px);
+  padding: 40px 20px 64px;
+}
 
-.orders-container{
-  max-width: 1100px;
+.orders-container {
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 16px;
 }
 
-.orders-header{ margin-bottom: 14px; }
-
-.orders-header h2{ margin:0; font-weight:1000; }
-
-.orders-card{
-  background:#fff;
-  border-radius:12px;
-  padding:18px;
-  box-shadow:0 6px 20px rgba(17,24,39,0.06);
+.orders-header {
+  margin-bottom: 28px;
+  text-align: left;
 }
 
-.orders-error{
-  background:#fee2e2;
-  border:1px solid #fecaca;
+.orders-header h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-h);
+  margin-bottom: 8px;
 }
 
-.orders-list{ display:flex; flex-direction:column; gap:12px; }
-
-.order-row{
-  background:#fff;
-  border-radius:12px;
-  padding:14px;
-  box-shadow:0 6px 20px rgba(17,24,39,0.06);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  flex-wrap:wrap;
+.orders-tagline {
+  font-size: 0.95rem;
+  color: var(--text-light);
+  margin: 0;
 }
 
-.order-title{ font-weight:1000; }
-.order-sub{ color:#374151; font-weight:800; font-size:13px; margin-top:4px; }
-
-.order-meta{ display:flex; gap:26px; flex-wrap:wrap; }
-.order-meta-item{ min-width: 140px; }
-
-.order-meta-label{ color:#6b7280; font-weight:900; font-size:12px; }
-.order-meta-value{ font-weight:1000; margin-top:6px; }
-
-.order-actions{ display:flex; align-items:center; }
-
-@media (max-width: 700px){
-  .order-row{ align-items:flex-start; }
+.orders-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 24px;
 }
 
+.orders-error {
+  background: var(--danger-bg);
+  border-color: rgba(239, 68, 68, 0.2);
+  color: var(--danger);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.order-row {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.order-row:hover {
+  border-color: var(--text-light);
+  box-shadow: var(--shadow-md);
+}
+
+.order-row-main {
+  display: flex;
+  flex-direction: column;
+}
+
+.order-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-h);
+  margin-bottom: 4px;
+}
+
+.order-id-full {
+  font-size: 0.72rem;
+  color: var(--text-light);
+  font-family: var(--mono);
+  margin-bottom: 6px;
+}
+
+.order-sub {
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.order-meta {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.order-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.order-meta-label {
+  color: var(--text-light);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.order-meta-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-h);
+  font-family: var(--heading);
+}
+
+.order-actions {
+  display: flex;
+  align-items: center;
+}
+
+.orders-details-btn {
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-h);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.orders-details-btn:hover {
+  border-color: var(--primary);
+  background: var(--bg-light);
+}
+
+/* Status Pills */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  box-shadow: var(--shadow-sm);
+}
+
+.status-pill.status-pending {
+  background: var(--warning-bg);
+  color: var(--warning);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.status-pill.status-processing {
+  background: #eff6ff;
+  color: var(--accent-blue);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+}
+
+.status-pill.status-delivered {
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.status-pill.status-cancelled {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* Empty View */
+.orders-empty-card {
+  max-width: 500px;
+  margin: 64px auto;
+  text-align: center;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 48px 32px;
+}
+
+.orders-empty-icon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+}
+
+.orders-empty-card h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-h);
+  margin-bottom: 12px;
+}
+
+.orders-empty-card p {
+  color: var(--text-light);
+  font-size: 0.95rem;
+  margin-bottom: 24px;
+}
+
+.orders-shop-btn {
+  max-width: 200px;
+  margin: 0 auto;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: var(--accent-blue);
+  border-radius: var(--radius-sm);
+  border: none;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  transition: all 0.2s ease;
+}
+
+.orders-shop-btn:hover {
+  background: var(--accent-blue-hover);
+  transform: translateY(-0.5px);
+}
+
+/* Loading View */
+.orders-loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .order-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .order-meta {
+    width: 100%;
+    justify-content: space-between;
+    border-top: 1px dashed var(--border);
+    border-bottom: 1px dashed var(--border);
+    padding: 12px 0;
+  }
+  .orders-details-btn {
+    width: 100%;
+    text-align: center;
+  }
+  .order-actions {
+    width: 100%;
+  }
+}

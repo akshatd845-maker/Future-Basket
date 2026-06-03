@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import fallbackImage from "../assets/hero.png";
 import "./Cart.css";
 
 function Cart() {
@@ -15,20 +16,22 @@ function Cart() {
   } = useCart();
 
   const handleClear = () => {
-    const ok = window.confirm("Clear cart?");
+    const ok = window.confirm("Are you sure you want to clear your cart?");
     if (ok) clearCart();
   };
 
   if (!cartItems.length) {
     return (
       <div className="cart-page">
-        <div className="empty-cart cart-items-card">
-          <div className="empty-icon">🛒</div>
-          <div className="empty-title">Your cart is empty</div>
-          <div className="empty-sub">Add items to see them here.</div>
-          <div style={{ marginTop: 18, display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <button className="btn btn-primary" onClick={() => navigate("/")}>Continue Shopping</button>
-          </div>
+        <div className="empty-cart-container">
+          <div className="empty-cart-icon">🛒</div>
+          <h2 className="empty-cart-title">Your Cart is Empty</h2>
+          <p className="empty-cart-sub">
+            Looks like you haven't added anything to your cart yet. Let's find some great deals!
+          </p>
+          <button className="cart-btn btn-primary-action" onClick={() => navigate("/")}>
+            Start Shopping
+          </button>
         </div>
       </div>
     );
@@ -36,73 +39,111 @@ function Cart() {
 
   return (
     <div className="cart-page">
+      <h1 className="cart-page-title">Shopping Cart</h1>
+      
       <div className="cart-grid">
-        <section className="cart-items-card">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, gap: 12, flexWrap: "wrap" }}>
-            <div>
-              <h2 style={{ margin: 0, fontWeight: 1000 }}>Shopping Cart</h2>
-              <p style={{ margin: "6px 0 0", color: "#374151", fontWeight: 800 }}>
-                {totalItems} {totalItems === 1 ? "item" : "items"}
-              </p>
-            </div>
-            <button className="btn btn-ghost" onClick={handleClear}>Clear Cart</button>
+        <section className="cart-items-section">
+          <div className="cart-header-row">
+            <span className="cart-items-count">
+              {totalItems} {totalItems === 1 ? "item" : "items"} in your cart
+            </span>
+            <button className="cart-clear-btn" onClick={handleClear}>
+              Clear Cart
+            </button>
           </div>
 
-          {cartItems.map((item) => (
-            <div key={item.productId} className="cart-item">
-              <img
-                src={item.product?.image}
-                alt={item.product?.title || "Product"}
-                className="cart-thumb"
-              />
+          <div className="cart-items-list">
+            {cartItems.map((item) => (
+              <div key={item.productId} className="cart-item-row">
+                <div className="cart-item-image-col">
+                  <img
+                    src={item.product?.image}
+                    alt={item.product?.title || "Product"}
+                    className="cart-thumb"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = fallbackImage;
+                    }}
+                  />
+                </div>
 
-              <div>
-                <div className="cart-title">{item.product?.title || "(Untitled)"}</div>
-                <div className="cart-meta">${Number(item.product?.price ?? 0).toFixed(2)}</div>
+                <div className="cart-item-details-col">
+                  <h3 className="cart-item-title">{item.product?.title || "(Untitled)"}</h3>
+                  <div className="cart-item-category">{item.product?.category}</div>
+                  <div className="cart-item-price">${Number(item.product?.price ?? 0).toFixed(2)}</div>
+                  
+                  <div className="qty-selector">
+                    <button 
+                      className="qty-adjust-btn" 
+                      onClick={() => decreaseQuantity(item.productId)} 
+                      aria-label="Decrease quantity"
+                    >
+                      -
+                    </button>
+                    <span className="qty-adjust-value">{item.quantity}</span>
+                    <button 
+                      className="qty-adjust-btn" 
+                      onClick={() => increaseQuantity(item.productId)} 
+                      aria-label="Increase quantity"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
 
-                <div className="qty-controls">
-                  <button className="qty-btn" onClick={() => decreaseQuantity(item.productId)} aria-label="Decrease quantity">
-                    -
-                  </button>
-                  <div className="qty-value">{item.quantity}</div>
-                  <button className="qty-btn" onClick={() => increaseQuantity(item.productId)} aria-label="Increase quantity">
-                    +
+                <div className="cart-item-actions-col">
+                  <div className="cart-item-total-price">
+                    ${(Number(item.product?.price ?? 0) * item.quantity).toFixed(2)}
+                  </div>
+                  <button className="cart-item-remove-btn" onClick={() => removeFromCart(item.productId)}>
+                    Remove
                   </button>
                 </div>
               </div>
-
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10 }}>
-                <div style={{ fontWeight: 1000 }}>
-                  ${Number(item.product?.price ?? 0).toFixed(2) * item.quantity}
-                </div>
-                <button className="remove-btn" onClick={() => removeFromCart(item.productId)}>
-                  Remove
-                </button>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </section>
 
-        <aside className="cart-summary-card">
-          <div className="summary-title">Cart Summary</div>
+        <aside className="cart-summary-section">
+          <h2 className="summary-section-title">Order Summary</h2>
 
-          <div className="summary-row">
-            <span>Total Items</span>
-            <span>{totalItems}</span>
-          </div>
-          <div className="summary-row">
-            <span>Total Price</span>
-            <span className="summary-total">${Number(totalPrice).toFixed(2)}</span>
+          <div className="summary-details-box">
+            <div className="summary-detail-row">
+              <span>Subtotal ({totalItems} {totalItems === 1 ? "item" : "items"})</span>
+              <span className="bold-price">${Number(totalPrice).toFixed(2)}</span>
+            </div>
+            <div className="summary-detail-row">
+              <span>Shipping</span>
+              <span className="shipping-badge">Calculated at next step</span>
+            </div>
+            
+            <div className="summary-divider" />
+            
+            <div className="summary-detail-row total-row">
+              <span>Total Price</span>
+              <span className="grand-total">${Number(totalPrice).toFixed(2)}</span>
+            </div>
           </div>
 
-          <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 12 }}>
-            <button className="btn btn-primary" onClick={() => navigate("/")}>Continue Shopping</button>
-            <button className="btn btn-ghost" onClick={() => navigate("/checkout")}>Proceed to Checkout</button>
+          <div className="summary-actions">
+            <button className="cart-btn btn-primary-action" onClick={() => navigate("/checkout")}>
+              Proceed to Checkout
+            </button>
+            <button className="cart-btn btn-secondary-action" onClick={() => navigate("/")}>
+              Continue Shopping
+            </button>
           </div>
 
-          <p style={{ marginTop: 14, color: "#374151", fontWeight: 800, fontSize: 13 }}>
-            Taxes and shipping calculated at checkout.
-          </p>
+          <div className="cart-trust-badges">
+            <div className="trust-badge-item">
+              <span className="badge-icon">🔒</span>
+              <span>Secure SSL encrypted connection</span>
+            </div>
+            <div className="trust-badge-item">
+              <span className="badge-icon">📦</span>
+              <span>Fast packing & nationwide delivery</span>
+            </div>
+          </div>
         </aside>
       </div>
     </div>
@@ -110,4 +151,3 @@ function Cart() {
 }
 
 export default Cart;
-

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import logo from "../assets/Future Basket Logo.png";
 import "./Register.css";
 
 function Register() {
@@ -33,16 +34,14 @@ function Register() {
   const validateForm = () => {
     const newErrors = {};
 
-    // Name validation
     if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
+      newErrors.name = "Full name is required";
     } else if (formData.name.trim().length < 2) {
       newErrors.name = "Name must be at least 2 characters";
     } else if (formData.name.trim().length > 50) {
       newErrors.name = "Name cannot exceed 50 characters";
     }
 
-    // Email validation
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
     } else if (
@@ -50,17 +49,15 @@ function Register() {
         formData.email
       )
     ) {
-      newErrors.email = "Please enter a valid email";
+      newErrors.email = "Please enter a valid email address";
     }
 
-    // Password validation
     if (!formData.password) {
       newErrors.password = "Password is required";
     } else if (formData.password.length < 6) {
       newErrors.password = "Password must be at least 6 characters";
     }
 
-    // Confirm password validation
     if (!formData.confirmPassword) {
       newErrors.confirmPassword = "Please confirm your password";
     } else if (formData.password !== formData.confirmPassword) {
@@ -78,7 +75,6 @@ function Register() {
       [name]: value,
     }));
 
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -111,12 +107,23 @@ function Register() {
   return (
     <div className="register-container">
       <div className="register-card">
-        <div className="register-header">
-          <h1>Create Account</h1>
-          <p>Join us and start shopping</p>
+        <div className="auth-brand-logo-container">
+          <Link to="/">
+            <img src={logo} alt="Future Basket Logo" className="auth-brand-logo" />
+          </Link>
         </div>
 
-        {error && <div className="alert alert-error">{error}</div>}
+        <div className="register-header">
+          <h1>Create Account</h1>
+          <p>Join Future Basket and shop whenever, wherever.</p>
+        </div>
+
+        {error && (
+          <div className="alert alert-error">
+            <span className="alert-icon">⚠️</span>
+            <span className="alert-message">{error}</span>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="register-form">
           <div className="form-group">
@@ -127,28 +134,28 @@ function Register() {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              placeholder="Enter your full name"
+              placeholder="e.g. John Doe"
               className={errors.name ? "input-error" : ""}
               disabled={submitting || loading}
+              required
             />
             {errors.name && <span className="error-text">{errors.name}</span>}
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">Email Address</label>
             <input
               type="email"
               id="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="Enter your email"
+              placeholder="name@example.com"
               className={errors.email ? "input-error" : ""}
               disabled={submitting || loading}
+              required
             />
-            {errors.email && (
-              <span className="error-text">{errors.email}</span>
-            )}
+            {errors.email && <span className="error-text">{errors.email}</span>}
           </div>
 
           <div className="form-group">
@@ -160,9 +167,10 @@ function Register() {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="Create a password (min 6 characters)"
+                placeholder="At least 6 characters"
                 className={errors.password ? "input-error" : ""}
                 disabled={submitting || loading}
+                required
               />
               <button
                 type="button"
@@ -187,9 +195,10 @@ function Register() {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                placeholder="Confirm your password"
+                placeholder="Re-enter your password"
                 className={errors.confirmPassword ? "input-error" : ""}
                 disabled={submitting || loading}
+                required
               />
               <button
                 type="button"
@@ -208,7 +217,7 @@ function Register() {
           <button
             type="submit"
             className="register-btn"
-            disabled={submitting}
+            disabled={submitting || loading}
           >
             {submitting || loading ? "Creating account..." : "Create Account"}
           </button>
@@ -218,9 +227,13 @@ function Register() {
           <p>
             Already have an account?{" "}
             <Link to="/login" className="login-link">
-              Sign in
+              Sign In
             </Link>
           </p>
+        </div>
+
+        <div className="auth-trust-notes">
+          🔒 SSL Secure 256-bit encrypted authentication.
         </div>
       </div>
     </div>

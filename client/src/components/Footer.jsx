@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
+import logo from "../assets/Future Basket Logo.png";
 import "./Footer.css";
 
 const QUICK_LINKS = [
@@ -16,6 +16,8 @@ const FOOTER_CATEGORIES = [
   "Sports",
   "Books",
   "Beauty",
+  "Accessories",
+  "Mobile Accessories",
 ];
 
 const SUPPORT_LINKS = [
@@ -27,55 +29,32 @@ const SUPPORT_LINKS = [
 ];
 
 function Footer() {
-  const [email, setEmail] = useState("");
-  const [subscribed, setSubscribed] = useState(false);
-
-  const handleNewsletter = (e) => {
-    e.preventDefault();
-    if (email.trim()) {
-      setSubscribed(true);
-      setEmail("");
-    }
-  };
-
   return (
     <footer className="site-footer">
-      <div className="footer-newsletter">
-        <div className="footer-inner footer-newsletter-inner">
-          <div className="newsletter-copy">
-            <h3>Subscribe to Our Newsletter</h3>
-            <p>Get exclusive deals, new arrivals, and shopping tips in your inbox.</p>
-          </div>
-          <form className="newsletter-form" onSubmit={handleNewsletter}>
-            <input
-              type="email"
-              placeholder="Enter your email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              aria-label="Email for newsletter"
-            />
-            <button type="submit">Subscribe</button>
-          </form>
-          {subscribed && (
-            <p className="newsletter-success" role="status">
-              Thank you for subscribing!
-            </p>
-          )}
-        </div>
-      </div>
-
       <div className="footer-main">
         <div className="footer-inner footer-grid">
           <div className="footer-col footer-brand-col">
             <Link to="/" className="footer-brand">
-              <span className="footer-brand-icon">e</span>
-              <span>eCommerce</span>
+              <img
+                src={logo}
+                className="footer-brand-logo"
+                alt="Future Basket Logo"
+              />
+              <div className="footer-brand-text-group">
+                <span className="footer-brand-name">Future Basket</span>
+                <span className="footer-brand-tagline">Whenever, Wherever</span>
+              </div>
             </Link>
             <p className="footer-about">
-              Your trusted online marketplace for quality products at great prices.
-              Shop with confidence — fast shipping, secure checkout.
+              Future Basket — quality products, thoughtfully curated for what's next. 
+              Enjoy fast shipping, secure checkouts, and 24/7 dedicated support.
             </p>
+            <div className="footer-contact-info">
+              <h4>Contact Us</h4>
+              <p className="contact-item">📧 support@futurebasket.com</p>
+              <p className="contact-item">📞 +1 (800) 555-0199</p>
+              <p className="contact-item">📍 100 Future Way, Suite 500, NY</p>
+            </div>
           </div>
 
           <div className="footer-col">
@@ -116,7 +95,7 @@ function Footer() {
       <div className="footer-bottom">
         <div className="footer-inner footer-bottom-inner">
           <p>
-            &copy; {new Date().getFullYear()} eCommerce Marketplace. All rights reserved.
+            &copy; {new Date().getFullYear()} Future Basket. All rights reserved.
           </p>
           <div className="footer-legal">
             <Link to="/">Privacy Policy</Link>

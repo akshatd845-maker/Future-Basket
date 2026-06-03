@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { productApi } from "../services/api";
 import { useCart } from "../context/CartContext";
+import fallbackImage from "../assets/hero.png";
 import "./ProductDetails.css";
 
 function ProductDetails() {
@@ -36,8 +37,6 @@ function ProductDetails() {
   }, [id]);
 
   const stockAvailable = (() => {
-    // Defensive: product schema currently does not include stock.
-    // Requirement: display "In Stock" by default when stock info is unavailable.
     const stock = product?.stock;
     if (stock === undefined || stock === null) return true;
 
@@ -53,68 +52,109 @@ function ProductDetails() {
 
   if (loading) {
     return (
-      <div className="loading-state">
-        <div className="loading-spinner" />
-        <p>Loading product...</p>
+      <div className="product-details-page">
+        <div className="loading-state">
+          <div className="loading-spinner" />
+          <p className="loading-text">Loading product details...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="error-state">
-        <div style={{ fontSize: 40, marginBottom: 10 }}>⚠️</div>
-        <p style={{ fontWeight: 700, color: "#111827" }}>{error}</p>
-        <button className="btn btn-ghost" onClick={() => navigate("/")}>Back to Products</button>
+      <div className="product-details-page">
+        <div className="error-state">
+          <div className="error-icon" aria-hidden="true">⚠️</div>
+          <p className="error-message">{error}</p>
+          <button className="btn btn-ghost" onClick={() => navigate("/")}>
+            Back to Products
+          </button>
+        </div>
       </div>
     );
   }
 
   if (!product) {
     return (
-      <div className="not-found-state">
-        <p style={{ fontWeight: 800, fontSize: 18 }}>Product not found</p>
-        <button className="btn btn-ghost" onClick={() => navigate("/")}>Back to Products</button>
+      <div className="product-details-page">
+        <div className="not-found-state">
+          <div className="error-icon" aria-hidden="true">📦</div>
+          <p className="not-found-message">Product not found</p>
+          <button className="btn btn-ghost" onClick={() => navigate("/")}>
+            Back to Products
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="product-details-container">
-      <div className="product-details-grid">
-        <div className="product-image-card">
-          <img
-            src={product.image}
-            alt={product.title}
-            className="product-image"
-          />
-        </div>
-
-        <div className="product-info">
-          <span className="product-category">{product.category || "Uncategorized"}</span>
-
-          <h1 className="product-title">{product.title}</h1>
-          <div className="product-price">${Number(product.price).toFixed(2)}</div>
-
-          <div className="stock-status">
-            <span className="stock-dot" />
-            <span className="stock-text">{stockAvailable ? "In Stock" : "Out of Stock"}</span>
+    <div className="product-details-page">
+      <div className="product-details-container">
+        <div className="product-details-grid">
+          <div className="product-image-card">
+            <div className="product-image-wrapper">
+              <img
+                src={product.image}
+                alt={product.title}
+                className="product-image"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = fallbackImage;
+                }}
+              />
+            </div>
           </div>
 
-          <p className="product-description">{product.description}</p>
+          <div className="product-info">
+            <div className="product-meta-row">
+              <span className="product-category">{product.category || "General"}</span>
+              <div className={`stock-status ${stockAvailable ? "in-stock" : "out-of-stock"}`}>
+                <span className="stock-dot" />
+                <span className="stock-text">{stockAvailable ? "In Stock" : "Out of Stock"}</span>
+              </div>
+            </div>
 
-          <div className="product-actions">
-            <button
-              className="btn btn-primary"
-              onClick={onAddToCart}
-              disabled={!stockAvailable}
-              style={!stockAvailable ? { opacity: 0.6, cursor: "not-allowed" } : undefined}
-            >
-              <span>🛒</span>
-              <span>Add To Cart</span>
-            </button>
+            <h1 className="product-title">{product.title}</h1>
+            <div className="product-price">${Number(product.price).toFixed(2)}</div>
 
-            <button className="btn btn-ghost" onClick={() => navigate("/")}>Back to Products</button>
+            <div className="product-divider" />
+
+            <p className="product-description">{product.description}</p>
+
+            <div className="product-highlights">
+              <h3>Product Guarantees</h3>
+              <ul>
+                <li>
+                  <span className="highlight-icon">🔒</span>
+                  <span><strong>Secure Checkout:</strong> SSL-encrypted safe payments</span>
+                </li>
+                <li>
+                  <span className="highlight-icon">🚚</span>
+                  <span><strong>Free Express Shipping:</strong> For all orders over $100.00</span>
+                </li>
+                <li>
+                  <span className="highlight-icon">🛡️</span>
+                  <span><strong>30-Day returns:</strong> Worry-free money-back assurance</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="product-actions">
+              <button
+                className="btn btn-primary add-to-cart-action-btn"
+                onClick={onAddToCart}
+                disabled={!stockAvailable}
+              >
+                <span>🛒</span>
+                <span>Add To Cart</span>
+              </button>
+
+              <button className="btn btn-ghost" onClick={() => navigate("/")}>
+                Back to Shop
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -123,4 +163,3 @@ function ProductDetails() {
 }
 
 export default ProductDetails;
-

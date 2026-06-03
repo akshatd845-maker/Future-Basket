@@ -2,7 +2,9 @@ import { useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/useAuth";
+import logo from "../assets/Future Basket Logo.png";
 import "./Navbar.css";
+
 
 const TOP_LINKS = [
   { label: "Best Sellers", href: "/?section=featured" },
@@ -12,6 +14,7 @@ const TOP_LINKS = [
   { label: "Customer Service", href: "/login" },
 ];
 
+
 const CATEGORIES = [
   "All Categories",
   "Electronics",
@@ -20,8 +23,8 @@ const CATEGORIES = [
   "Sports",
   "Books",
   "Beauty",
-  "Toys",
-  "Grocery",
+  "Accessories",
+  "Mobile Accessories",
 ];
 
 function Navbar() {
@@ -90,14 +93,14 @@ function Navbar() {
       <div className="main-header">
         <div className="main-header-inner">
           <Link to="/" className="brand" onClick={closeMobile}>
-            <span className="brand-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M7 4h10l1 3h3v2h-1l-2 11H6L4 9H3V7h3l1-3zm2 3h6l-.5-1.5h-5L9 7zm-1.2 4 1.5 7h7.4l1.5-7H7.8z" />
-              </svg>
-            </span>
+            <img
+              src={logo}
+              className="brand-logo"
+              alt="Future Basket Logo"
+            />
             <span className="brand-text">
-              <span className="brand-name">eCommerce</span>
-              <span className="brand-tagline">Marketplace</span>
+              <span className="brand-name">Future Basket</span>
+              <span className="brand-tagline">Whenever, Wherever</span>
             </span>
           </Link>
 

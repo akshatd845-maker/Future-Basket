@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
 import api from "../services/api";
 import "./Orders.css";
 
@@ -28,10 +27,29 @@ function Orders() {
     load();
   }, []);
 
+  const getStatusClass = (status) => {
+    const s = status || "Pending";
+    switch (s) {
+      case "Cancelled":
+        return "status-pill status-cancelled";
+      case "Pending":
+        return "status-pill status-pending";
+      case "Processing":
+        return "status-pill status-processing";
+      case "Delivered":
+        return "status-pill status-delivered";
+      default:
+        return "status-pill";
+    }
+  };
+
   if (loading) {
     return (
       <div className="orders-page">
-        <div className="orders-card">Loading...</div>
+        <div className="orders-loading-container">
+          <div className="loading-spinner" />
+          <p className="loading-text">Loading your orders...</p>
+        </div>
       </div>
     );
   }
@@ -39,7 +57,12 @@ function Orders() {
   if (error) {
     return (
       <div className="orders-page">
-        <div className="orders-card orders-error">{error}</div>
+        <div className="orders-container">
+          <div className="orders-card orders-error">
+            <span className="error-icon">⚠️</span>
+            <p className="error-message">{error}</p>
+          </div>
+        </div>
       </div>
     );
   }
@@ -48,38 +71,54 @@ function Orders() {
     <div className="orders-page">
       <div className="orders-container">
         <div className="orders-header">
-          <h2>My Orders</h2>
+          <h1>My Orders</h1>
+          <p className="orders-tagline">View and track your previous purchases.</p>
         </div>
 
         {orders.length === 0 ? (
-          <div className="orders-card">
-            <div style={{ fontWeight: 1000, marginBottom: 8 }}>No orders yet</div>
-            <div style={{ color: "#374151", fontWeight: 800, fontSize: 13 }}>
-              Place an order to see it here.
-            </div>
+          <div className="orders-empty-card">
+            <div className="orders-empty-icon">📦</div>
+            <h2>No Orders Found</h2>
+            <p>You haven't placed any orders yet. Once you place an order, it will appear here.</p>
+            <Link className="btn btn-primary orders-shop-btn" to="/">
+              Start Shopping
+            </Link>
           </div>
         ) : (
           <div className="orders-list">
             {orders.map((order) => (
               <div key={order._id} className="order-row">
-                <div>
-                  <div className="order-title">Order {order._id}</div>
+                <div className="order-row-main">
+                  <div className="order-title">Order #{order._id.substring(order._id.length - 8).toUpperCase()}</div>
+                  <div className="order-id-full">ID: {order._id}</div>
                   <div className="order-sub">
-                    {order.createdAt ? new Date(order.createdAt).toLocaleString() : ""}
+                    📅 {order.createdAt ? new Date(order.createdAt).toLocaleString() : ""}
                   </div>
                 </div>
+                
                 <div className="order-meta">
                   <div className="order-meta-item">
-                    <div className="order-meta-label">Total</div>
+                    <div className="order-meta-label">Total Price</div>
                     <div className="order-meta-value">${Number(order.totalPrice ?? 0).toFixed(2)}</div>
                   </div>
                   <div className="order-meta-item">
+                    <div className="order-meta-label">Payment</div>
+                    <div className="order-meta-value" style={{ textTransform: "uppercase", fontSize: "0.82rem" }}>
+                      {order.paymentMethod === "cod" ? "COD" : "Razorpay"}
+                    </div>
+                  </div>
+                  <div className="order-meta-item">
                     <div className="order-meta-label">Status</div>
-                    <div className="order-meta-value">{order.orderStatus || "Pending"}</div>
+                    <div className="order-meta-value">
+                      <span className={getStatusClass(order.orderStatus)}>
+                        {order.orderStatus || "Pending"}
+                      </span>
+                    </div>
                   </div>
                 </div>
+
                 <div className="order-actions">
-                  <Link className="btn btn-primary" to={`/orders/${order._id}`}>
+                  <Link className="orders-details-btn" to={`/orders/${order._id}`}>
                     View Details
                   </Link>
                 </div>
@@ -93,4 +132,3 @@ function Orders() {
 }
 
 export default Orders;
-

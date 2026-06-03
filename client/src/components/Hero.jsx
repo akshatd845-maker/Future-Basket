@@ -1,40 +1,51 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import fallbackImage from "../assets/hero.png";
 import "./Hero.css";
 
 const SLIDES = [
   {
     id: 1,
-    eyebrow: "Summer Sale",
-    title: "Up to 50% Off Top Brands",
+    eyebrow: "Whenever, Wherever",
+
+    title: "Future Basket",
+
     subtitle:
-      "Discover thousands of deals on electronics, fashion, home essentials and more.",
-    cta: "Shop Today's Deals",
+      "Discover premium products, exclusive deals, and a seamless shopping experience designed for modern customers.",
+
+    cta: "Explore Deals",
+
     link: "/?section=deals",
     image:
-      "https://images.unsplash.com/photo-1607082348824-0a96024f256a?w=1400&q=80",
+      "https://images.unsplash.com/photo-1607082349566-187342175e2f?w=1400&q=80",
   },
   {
     id: 2,
-    eyebrow: "New Arrivals",
-    title: "Fresh Picks Just Landed",
+    eyebrow: "Whenever, Wherever",
+
+    title: "Future Basket",
+
     subtitle:
-      "Explore the latest products curated for you — quality you trust, prices you'll love.",
-    cta: "Browse New Releases",
+      "Explore the latest arrivals — quality you trust, prices you’ll love.",
+    cta: "Browse New",
+
     link: "/?section=latest",
     image:
       "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1400&q=80",
   },
   {
     id: 3,
-    eyebrow: "Free Shipping",
-    title: "Shop Smart. Save More.",
+    eyebrow: "Whenever, Wherever",
+
+    title: "Future Basket",
+
     subtitle:
-      "Your one-stop marketplace for everything you need — fast delivery, secure checkout.",
+      "Everything you need, delivered fast — secure checkout included.",
     cta: "Start Shopping",
+
     link: "/",
     image:
-      "https://images.unsplash.com/photo-1472851293957-eed7d7cc44f8?w=1400&q=80",
+      "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1400&q=80",
   },
 ];
 
@@ -67,6 +78,10 @@ function Hero() {
               alt=""
               className="hero-slide-bg"
               loading={index === 0 ? "eager" : "lazy"}
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = fallbackImage;
+              }}
             />
             <div className="hero-slide-overlay" />
             <div className="hero-slide-content">

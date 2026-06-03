@@ -126,10 +126,10 @@ exports.createOrder = async (req, res, next) => {
 
     const shipping = getShippingFromBody(shippingAddress);
 
-    if (!paymentMethod || !["card", "cod"].includes(paymentMethod)) {
+    if (!paymentMethod || !["card", "cod", "razorpay"].includes(paymentMethod)) {
       return res.status(400).json({
         success: false,
-        message: "paymentMethod must be 'card' or 'cod'",
+        message: "paymentMethod must be 'card', 'cod' or 'razorpay'",
       });
     }
 
@@ -237,7 +237,15 @@ exports.updateOrderStatus = async (req, res, next) => {
   }
 };
 
-// DELETE /api/orders/:id (Cancel)
+const isCancelableStatus = (status) => {
+  return ["Pending", "Processing"].includes(status);
+};
+
+const isNotCancelableStatus = (status) => {
+  return ["Shipped", "Delivered", "Cancelled"].includes(status);
+};
+
+// PATCH /api/orders/:id/cancel (and DELETE /api/orders/:id for backward compatibility)
 exports.cancelOrder = async (req, res, next) => {
   try {
     const userId = req.user?._id;
@@ -255,6 +263,23 @@ exports.cancelOrder = async (req, res, next) => {
       return res.status(404).json({ success: false, message: "Order not found" });
     }
 
+    const currentStatus = order.orderStatus;
+
+    // Only allow cancel for Pending/Processing
+    if (!isCancelableStatus(currentStatus)) {
+      if (isNotCancelableStatus(currentStatus)) {
+        return res.status(400).json({
+          success: false,
+          message: `Order cannot be cancelled when status is '${currentStatus}'`,
+        });
+      }
+
+      return res.status(400).json({
+        success: false,
+        message: `Order cannot be cancelled when status is '${currentStatus}'`,
+      });
+    }
+
     order.orderStatus = "Cancelled";
     await order.save();
 
@@ -263,4 +288,6 @@ exports.cancelOrder = async (req, res, next) => {
     next(err);
   }
 };
+
+
 

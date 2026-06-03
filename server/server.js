@@ -10,6 +10,7 @@ const { validateEnv } = require("./config/validateEnv");
 const productRoutes = require("./routes/productRoutes");
 const authRoutes = require("./routes/authRoutes");
 const ordersRoutes = require("./routes/ordersRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
 const errorHandler = require("./middleware/errorMiddleware");
 
 
@@ -33,6 +34,7 @@ app.get("/", (req, res) => {
 app.use("/api/products", productRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/orders", ordersRoutes);
+app.use("/api/payment", paymentRoutes);
 
 // Error Handler
 app.use(errorHandler);

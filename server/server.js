@@ -17,13 +17,37 @@ const errorHandler = require("./middleware/errorMiddleware");
 const app = express();
 
 // Middleware
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://127.0.0.1:5173",
+  "http://127.0.0.1:5174",
+];
+
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: (origin, callback) => {
+    // allow requests with no origin (like mobile apps or curl) or matching allowed list
+    if (!origin || allowedOrigins.indexOf(origin) !== -1 || origin.startsWith("http://localhost:") || origin.startsWith("http://127.0.0.1:")) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
 };
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
+
+// Response logging middleware
+app.use((req, res, next) => {
+  const oldJson = res.json;
+  res.json = function (data) {
+    console.log(`[Response] ${req.method} ${req.originalUrl} -> ${res.statusCode}`);
+    return oldJson.call(this, data);
+  };
+  next();
+});
 
 
 // Routes

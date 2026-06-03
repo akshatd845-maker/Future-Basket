@@ -3,17 +3,16 @@
  * Uses explicit hosts instead of DNS SRV lookup
  */
 
+require('dotenv').config();
 const { MongoClient } = require('mongodb');
 
-// Based on your nslookup results:
-const hosts = [
-  'ac-c4svcfy-shard-00-00.idbmq06.mongodb.net:27017',
-  'ac-c4svcfy-shard-00-01.idbmq06.mongodb.net:27017',
-  'ac-c4svcfy-shard-00-02.idbmq06.mongodb.net:27017'
-];
+// Retrieve non-SRV connection string from environment
+const uri = process.env.MONGO_URI_FALLBACK;
 
-// Non-SRV connection string format
-const uri = `mongodb://Akshat:Akshat69@${hosts.join(',')}/?retryWrites=true&w=majority&replicaSet=atlas-shard-0&authSource=admin&directConnection=true`;
+if (!uri) {
+  console.error('❌ Error: MONGO_URI_FALLBACK is not defined in your environment variables.');
+  process.exit(1);
+}
 
 console.log('=== Direct Connection Test ===\n');
 console.log('Testing non-SRV connection...');

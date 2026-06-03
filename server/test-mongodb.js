@@ -3,9 +3,15 @@
  * Run: node test-mongodb.js
  */
 
+require('dotenv').config();
 const { MongoClient } = require('mongodb');
 
-const uri = process.env.MONGO_URI || 'mongodb+srv://Akshat:Akshat69@cluster0.idbmq06.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const uri = process.env.MONGO_URI;
+
+if (!uri) {
+  console.error('❌ Error: MONGO_URI is not defined in your environment variables.');
+  process.exit(1);
+}
 
 console.log('=== MongoDB Connection Diagnostic ===\n');
 console.log('URI (password hidden):', uri.replace(/:[^:@]+@/, ':****@'));

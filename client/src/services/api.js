@@ -17,7 +17,12 @@ api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      if (config.headers && typeof config.headers.set === "function") {
+        config.headers.set("Authorization", `Bearer ${token}`);
+      } else {
+        if (!config.headers) config.headers = {};
+        config.headers["Authorization"] = `Bearer ${token}`;
+      }
     }
     return config;
   },
@@ -42,8 +47,16 @@ api.interceptors.response.use(
         );
 
         if (response.data.success && response.data.accessToken) {
-          localStorage.setItem("accessToken", response.data.accessToken);
-          originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
+          const newToken = response.data.accessToken;
+          localStorage.setItem("accessToken", newToken);
+          
+          if (originalRequest.headers && typeof originalRequest.headers.set === "function") {
+            originalRequest.headers.set("Authorization", `Bearer ${newToken}`);
+          } else {
+            if (!originalRequest.headers) originalRequest.headers = {};
+            originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+          }
+          
           return api(originalRequest);
         }
       } catch {

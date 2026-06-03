@@ -473,6 +473,14 @@
   .details-grid {
     grid-template-columns: 1fr;
   }
+
+  .details-btn {
+    min-height: 44px;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 @media (max-width: 580px) {
@@ -490,4 +498,36 @@
     flex-direction: row;
     gap: 16px;
   }
+
+  .back-link-btn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .order-id-badge {
+    font-size: 0.72rem;
+    padding: 3px 8px;
+  }
 }
+
+@media (max-width: 380px) {
+  .order-details-page {
+    padding: 20px 12px 48px;
+  }
+
+  .details-card,
+  .timeline-section-card {
+    padding: 16px;
+  }
+
+  .kv-row {
+    font-size: 0.85rem;
+  }
+
+  .oi-title {
+    font-size: 0.85rem;
+  }
+}
+

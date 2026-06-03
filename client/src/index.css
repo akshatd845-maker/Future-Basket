@@ -154,3 +154,30 @@ code {
   }
 }
 
+/* Mobile UX global refinements */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
+  position: relative;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Remove default mobile tap highlight */
+a, button, input, select, textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Ensure smooth touch scrolling for overflow containers */
+.overflow-touch-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Universal touch target focus states */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+}
+
+

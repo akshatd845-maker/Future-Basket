@@ -319,6 +319,14 @@
   .place-order-grid {
     grid-template-columns: 1fr;
   }
+
+  .place-order-btn {
+    min-height: 44px;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 @media (max-width: 480px) {
@@ -338,4 +346,34 @@
     padding-top: 8px;
     text-align: right;
   }
+
+  .radio-label {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .payment-info {
+    gap: 8px;
+  }
+
+  .payment-icon {
+    font-size: 1.25rem;
+  }
 }
+
+@media (max-width: 380px) {
+  .place-order-page {
+    padding: 20px 12px 48px;
+  }
+
+  .place-order-items-card,
+  .place-order-summary-card {
+    padding: 16px;
+  }
+
+  .payment-desc {
+    font-size: 0.75rem;
+    line-height: 1.3;
+  }
+}
+

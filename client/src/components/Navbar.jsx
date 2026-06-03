@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/useAuth";
@@ -43,6 +43,18 @@ function Navbar() {
   const cartBadge = useMemo(() => totalItems, [totalItems]);
 
   const closeMobile = () => setMobileOpen(false);
+
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
+
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -215,7 +227,7 @@ function Navbar() {
 
             <button
               type="button"
-              className="mobile-toggle"
+              className={`mobile-toggle ${mobileOpen ? "open" : ""}`}
               aria-label="Toggle menu"
               aria-expanded={mobileOpen}
               onClick={() => setMobileOpen((v) => !v)}
@@ -224,6 +236,101 @@ function Navbar() {
               <span />
               <span />
             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Drawer Overlay */}
+      {mobileOpen && <div className="drawer-overlay" onClick={closeMobile} />}
+
+      {/* Mobile Drawer Menu */}
+      <div className={`mobile-drawer ${mobileOpen ? "open" : ""}`} aria-hidden={!mobileOpen}>
+        <div className="drawer-header">
+          <Link to="/" className="brand" onClick={closeMobile}>
+            <img src={logo} className="brand-logo" alt="Future Basket Logo" />
+            <span className="brand-text">
+              <span className="brand-name">Future Basket</span>
+            </span>
+          </Link>
+          <button type="button" className="drawer-close-btn" onClick={closeMobile} aria-label="Close menu">
+            &times;
+          </button>
+        </div>
+
+        <div className="drawer-content">
+          <div className="drawer-section auth-section">
+            {isAuthenticated ? (
+              <div className="drawer-user-info">
+                <span className="drawer-greeting">Hello, {user?.name?.split(" ")[0] || "User"}</span>
+                <div className="drawer-auth-buttons">
+                  <Link to="/orders" className="drawer-btn btn-primary" onClick={closeMobile}>
+                    My Orders
+                  </Link>
+                  <button
+                    type="button"
+                    className="drawer-btn btn-outline btn-logout"
+                    onClick={() => {
+                      logout();
+                      closeMobile();
+                      navigate("/");
+                    }}
+                    disabled={loading}
+                  >
+                    Logout
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="drawer-user-info">
+                <span className="drawer-greeting">Hello, Sign In</span>
+                <div className="drawer-auth-buttons">
+                  <Link to="/login" className="drawer-btn btn-primary" onClick={closeMobile}>
+                    Sign In
+                  </Link>
+                  <Link to="/register" className="drawer-btn btn-outline" onClick={closeMobile}>
+                    Register
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="drawer-divider" />
+
+          <div className="drawer-section">
+            <h4 className="drawer-section-title">Shop by Category</h4>
+            <div className="drawer-categories-select-wrapper">
+              <select
+                className="drawer-category-select"
+                value={category}
+                onChange={handleCategoryChange}
+                aria-label="Filter by category"
+              >
+                {CATEGORIES.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="drawer-divider" />
+
+          <div className="drawer-section">
+            <h4 className="drawer-section-title">Quick Links</h4>
+            <nav className="drawer-nav" aria-label="Mobile promotional links">
+              {TOP_LINKS.map((link) => (
+                <Link
+                  key={link.label}
+                  to={link.href}
+                  className="drawer-nav-link"
+                  onClick={closeMobile}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
           </div>
         </div>
       </div>

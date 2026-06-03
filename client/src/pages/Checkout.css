@@ -259,11 +259,26 @@
   .checkout-grid {
     grid-template-columns: 1fr;
   }
+
+  .field input {
+    min-height: 44px;
+    padding: 12px 14px;
+    font-size: 0.95rem;
+  }
+
+  .checkout-btn {
+    min-height: 44px;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 @media (max-width: 520px) {
   .form-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
   .checkout-actions {
     flex-direction: column;
@@ -273,3 +288,19 @@
     width: 100%;
   }
 }
+
+@media (max-width: 380px) {
+  .checkout-page {
+    padding: 20px 12px 48px;
+  }
+
+  .checkout-form-card,
+  .checkout-summary-card {
+    padding: 16px;
+  }
+
+  .checkout-header h1 {
+    font-size: 1.45rem;
+  }
+}
+

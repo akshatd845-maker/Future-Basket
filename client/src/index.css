@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
   /* Color Palette - Premium slate base with clean warm accents */
@@ -36,8 +36,8 @@
   --radius-lg: 16px;
   --radius-xl: 24px;
   
-  --sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  --heading: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  --sans: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --heading: 'Inter', 'Outfit', 'Plus Jakarta Sans', sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 
   font: 16px/1.5 var(--sans);

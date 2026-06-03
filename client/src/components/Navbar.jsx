@@ -1,30 +1,30 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/useAuth";
 import logo from "../assets/Future Basket Logo.png";
 import "./Navbar.css";
 
 
-const TOP_LINKS = [
-  { label: "Best Sellers", href: "/?section=featured" },
-  { label: "Gift Ideas", href: "/?category=Gifts" },
-  { label: "New Releases", href: "/?section=latest" },
-  { label: "Today's Deals", href: "/?section=deals" },
-  { label: "Customer Service", href: "/login" },
+const CATEGORIES = [
+  { id: "all", label: "All" },
+  { id: "Electronics", label: "Electronics" },
+  { id: "Fashion", label: "Fashion" },
+  { id: "Home & Kitchen", label: "Home & Kitchen" },
+  { id: "Sports", label: "Sports" },
+  { id: "Books", label: "Books" },
+  { id: "Beauty", label: "Beauty" },
+  { id: "Accessories", label: "Accessories" },
+  { id: "Mobile Accessories", label: "Mobile" },
 ];
 
-
-const CATEGORIES = [
-  "All Categories",
-  "Electronics",
-  "Fashion",
-  "Home & Kitchen",
-  "Sports",
-  "Books",
-  "Beauty",
-  "Accessories",
-  "Mobile Accessories",
+const DRAWER_LINKS = [
+  { label: "Categories", icon: "grid", href: "/", badge: null },
+  { label: "My Orders", icon: "package", href: "/orders", badge: null },
+  { label: "Wishlist", icon: "heart", href: "/wishlist", badge: null },
+  { label: "Account", icon: "user", href: "/profile", badge: null },
+  { label: "Settings", icon: "settings", href: "/settings", badge: null },
 ];
 
 function Navbar() {
@@ -32,20 +32,29 @@ function Navbar() {
   const { user, isAuthenticated, logout, loading } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(
-    () => searchParams.get("q") || ""
-  );
-  const [category, setCategory] = useState(
-    () => searchParams.get("category") || "All Categories"
-  );
+  const [scrolled, setScrolled] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get("q") || "");
+  const [activeCategory, setActiveCategory] = useState("all");
 
   const cartBadge = useMemo(() => totalItems, [totalItems]);
 
-  const closeMobile = () => setMobileOpen(false);
+  const closeDrawer = () => setDrawerOpen(false);
+  const closeSearch = () => setSearchOpen(false);
 
+  // Handle scroll effect for header
   useEffect(() => {
-    if (mobileOpen) {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Handle body scroll lock
+  useEffect(() => {
+    if (drawerOpen || searchOpen) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -53,184 +62,107 @@ function Navbar() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [mobileOpen]);
-
+  }, [drawerOpen, searchOpen]);
 
   const handleSearch = (e) => {
     e.preventDefault();
     const params = new URLSearchParams();
     const trimmed = searchQuery.trim();
     if (trimmed) params.set("q", trimmed);
-    if (category && category !== "All Categories") {
-      params.set("category", category);
+    if (activeCategory && activeCategory !== "all") {
+      params.set("category", activeCategory);
     }
     const query = params.toString();
     navigate(query ? `/?${query}` : "/");
-    closeMobile();
+    closeSearch();
   };
 
-  const handleCategoryChange = (e) => {
-    const value = e.target.value;
-    setCategory(value);
+  const handleCategoryClick = (categoryId) => {
+    setActiveCategory(categoryId);
     const params = new URLSearchParams(searchParams);
-    if (value === "All Categories") {
+    if (categoryId === "all") {
       params.delete("category");
     } else {
-      params.set("category", value);
+      params.set("category", categoryId);
     }
     const query = params.toString();
     navigate(query ? `/?${query}` : "/");
-    closeMobile();
+  };
+
+  const handleDrawerLinkClick = (href) => {
+    navigate(href);
+    closeDrawer();
   };
 
   return (
-    <header className="site-header">
-      <div className="top-bar">
-        <div className="top-bar-inner">
-          <nav className="top-bar-nav" aria-label="Promotional links">
-            {TOP_LINKS.map((link) => (
-              <Link
-                key={link.label}
-                to={link.href}
-                className="top-bar-link"
-                onClick={closeMobile}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-      </div>
-
-      <div className="main-header">
-        <div className="main-header-inner">
-          <Link to="/" className="brand" onClick={closeMobile}>
-            <img
-              src={logo}
-              className="brand-logo"
-              alt="Future Basket Logo"
-            />
-            <span className="brand-text">
-              <span className="brand-name">Future Basket</span>
-              <span className="brand-tagline">Whenever, Wherever</span>
-            </span>
+    <>
+      {/* Sticky Header */}
+      <header className={`premium-header ${scrolled ? "scrolled" : ""}`}>
+        <div className="premium-header-inner">
+          {/* Left: Logo + Brand */}
+          <Link to="/" className="premium-brand" onClick={closeDrawer}>
+            <img src={logo} className="premium-logo" alt="Future Basket" />
+            <span className="premium-brand-name">Future Basket</span>
           </Link>
 
-          <div className={`search-area ${mobileOpen ? "open" : ""}`}>
-            <label className="category-select-wrap">
-              <span className="sr-only">Category</span>
-              <select
-                className="category-select"
-                value={category}
-                onChange={handleCategoryChange}
-                aria-label="Filter by category"
-              >
-                {CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <form className="search-form" onSubmit={handleSearch}>
-              <input
-                type="search"
-                className="search-input"
-                placeholder="Search products, brands and categories..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                aria-label="Search products"
-              />
-              <button type="submit" className="search-btn" aria-label="Search">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <circle cx="11" cy="11" r="7" strokeWidth="2" />
-                  <path d="M20 20l-4-4" strokeWidth="2" strokeLinecap="round" />
-                </svg>
-                <span className="search-btn-text">Search</span>
-              </button>
-            </form>
-          </div>
-
-          <div className="header-actions">
-            <Link
-              to="/cart"
-              className="header-action cart-action"
-              onClick={closeMobile}
+          {/* Right: Actions */}
+          <div className="premium-actions">
+            <button
+              type="button"
+              className="premium-action-btn"
+              aria-label="Search"
+              onClick={() => setSearchOpen(true)}
             >
-              <span className="action-icon cart-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <circle cx="9" cy="20" r="1.5" strokeWidth="2" />
-                  <circle cx="18" cy="20" r="1.5" strokeWidth="2" />
-                  <path
-                    d="M2 3h3l2.2 12.4a2 2 0 002 1.9h9.2a2 2 0 002-1.9L21 7H6"
-                    strokeWidth="2"
-                    strokeLinejoin="round"
-                  />
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M20 20l-4-4" strokeLinecap="round" />
+              </svg>
+            </button>
+
+            <Link to="/cart" className="premium-action-btn premium-cart-btn" aria-label="Cart">
+              <div className="premium-cart-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="9" cy="20" r="1.5" />
+                  <circle cx="18" cy="20" r="1.5" />
+                  <path d="M2 3h3l2.2 12.4a2 2 0 002 1.9h9.2a2 2 0 002-1.9L21 7H6" strokeLinejoin="round" />
                 </svg>
-                {cartBadge > 0 && (
-                  <span className="cart-badge" aria-label={`${cartBadge} items in cart`}>
-                    {cartBadge > 99 ? "99+" : cartBadge}
-                  </span>
-                )}
-              </span>
-              <span className="action-label">
-                <span className="action-title">Cart</span>
-                <span className="action-sub">
-                  {cartBadge} {cartBadge === 1 ? "item" : "items"}
-                </span>
-              </span>
+                <AnimatePresence mode="wait">
+                  {cartBadge > 0 && (
+                    <motion.span
+                      key={cartBadge}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      exit={{ scale: 0 }}
+                      className="premium-cart-badge"
+                    >
+                      {cartBadge > 99 ? "99+" : cartBadge}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </div>
             </Link>
 
-            <div className="auth-actions">
-              {isAuthenticated ? (
-                <>
-                  <div className="user-info">
-                    <Link to="/orders" className="header-action" onClick={closeMobile}>
-                      <span className="action-label">
-                        <span className="action-title">Hello, {user?.name?.split(" ")[0] || "User"}</span>
-                        <span className="action-sub">Account & Lists</span>
-                      </span>
-                    </Link>
-                  </div>
-                  <button
-                    type="button"
-                    className="logout-btn"
-                    onClick={() => {
-                      logout();
-                      closeMobile();
-                      navigate("/");
-                    }}
-                    disabled={loading}
-                  >
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link to="/login" className="header-action" onClick={closeMobile}>
-                    <span className="action-label">
-                      <span className="action-title">Hello, Sign in</span>
-                      <span className="action-sub">Account & Lists</span>
-                    </span>
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="register-btn"
-                    onClick={closeMobile}
-                  >
-                    Register
-                  </Link>
-                </>
-              )}
-            </div>
+            {isAuthenticated ? (
+              <Link to="/profile" className="premium-action-btn" aria-label="Profile">
+                <div className="premium-user-avatar">
+                  {user?.name?.charAt(0)?.toUpperCase() || "U"}
+                </div>
+              </Link>
+            ) : (
+              <Link to="/login" className="premium-action-btn" aria-label="Sign In">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="8" r="4" />
+                  <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
+                </svg>
+              </Link>
+            )}
 
             <button
               type="button"
-              className={`mobile-toggle ${mobileOpen ? "open" : ""}`}
-              aria-label="Toggle menu"
-              aria-expanded={mobileOpen}
-              onClick={() => setMobileOpen((v) => !v)}
+              className={`premium-hamburger ${drawerOpen ? "open" : ""}`}
+              aria-label="Menu"
+              aria-expanded={drawerOpen}
+              onClick={() => setDrawerOpen(!drawerOpen)}
             >
               <span />
               <span />
@@ -238,103 +170,229 @@ function Navbar() {
             </button>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Mobile Drawer Overlay */}
-      {mobileOpen && <div className="drawer-overlay" onClick={closeMobile} />}
-
-      {/* Mobile Drawer Menu */}
-      <div className={`mobile-drawer ${mobileOpen ? "open" : ""}`} aria-hidden={!mobileOpen}>
-        <div className="drawer-header">
-          <Link to="/" className="brand" onClick={closeMobile}>
-            <img src={logo} className="brand-logo" alt="Future Basket Logo" />
-            <span className="brand-text">
-              <span className="brand-name">Future Basket</span>
-            </span>
-          </Link>
-          <button type="button" className="drawer-close-btn" onClick={closeMobile} aria-label="Close menu">
-            &times;
-          </button>
-        </div>
-
-        <div className="drawer-content">
-          <div className="drawer-section auth-section">
-            {isAuthenticated ? (
-              <div className="drawer-user-info">
-                <span className="drawer-greeting">Hello, {user?.name?.split(" ")[0] || "User"}</span>
-                <div className="drawer-auth-buttons">
-                  <Link to="/orders" className="drawer-btn btn-primary" onClick={closeMobile}>
-                    My Orders
-                  </Link>
-                  <button
-                    type="button"
-                    className="drawer-btn btn-outline btn-logout"
-                    onClick={() => {
-                      logout();
-                      closeMobile();
-                      navigate("/");
-                    }}
-                    disabled={loading}
-                  >
-                    Logout
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="drawer-user-info">
-                <span className="drawer-greeting">Hello, Sign In</span>
-                <div className="drawer-auth-buttons">
-                  <Link to="/login" className="drawer-btn btn-primary" onClick={closeMobile}>
-                    Sign In
-                  </Link>
-                  <Link to="/register" className="drawer-btn btn-outline" onClick={closeMobile}>
-                    Register
-                  </Link>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="drawer-divider" />
-
-          <div className="drawer-section">
-            <h4 className="drawer-section-title">Shop by Category</h4>
-            <div className="drawer-categories-select-wrapper">
-              <select
-                className="drawer-category-select"
-                value={category}
-                onChange={handleCategoryChange}
-                aria-label="Filter by category"
+      {/* Full-width Search Bar */}
+      <AnimatePresence>
+        {searchOpen && (
+          <motion.div
+            className="premium-search-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="premium-search-container"
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -20, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <button
+                type="button"
+                className="premium-search-back"
+                onClick={closeSearch}
+                aria-label="Close search"
               >
-                {CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M19 12H5" strokeLinecap="round" />
+                  <path d="M12 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+              <form className="premium-search-form" onSubmit={handleSearch}>
+                <div className="premium-search-input-wrap">
+                  <svg className="premium-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="M20 20l-4-4" strokeLinecap="round" />
+                  </svg>
+                  <input
+                    type="search"
+                    className="premium-search-input"
+                    placeholder="Search products, brands and categories"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    autoFocus
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      className="premium-search-clear"
+                      onClick={() => setSearchQuery("")}
+                      aria-label="Clear search"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+                <button type="submit" className="premium-search-submit">
+                  Search
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-          <div className="drawer-divider" />
-
-          <div className="drawer-section">
-            <h4 className="drawer-section-title">Quick Links</h4>
-            <nav className="drawer-nav" aria-label="Mobile promotional links">
-              {TOP_LINKS.map((link) => (
-                <Link
-                  key={link.label}
-                  to={link.href}
-                  className="drawer-nav-link"
-                  onClick={closeMobile}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-          </div>
+      {/* Category Chips */}
+      <div className="premium-categories">
+        <div className="premium-categories-inner">
+          <motion.div className="premium-category-chips" drag="x" dragConstraints={{ left: 0, right: 0 }}>
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat.id}
+                type="button"
+                className={`premium-category-chip ${activeCategory === cat.id ? "active" : ""}`}
+                onClick={() => handleCategoryClick(cat.id)}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </motion.div>
         </div>
       </div>
-    </header>
+
+      {/* Drawer Menu */}
+      <AnimatePresence>
+        {drawerOpen && (
+          <>
+            <motion.div
+              className="premium-drawer-overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={closeDrawer}
+            />
+            <motion.div
+              className="premium-drawer"
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            >
+              <div className="premium-drawer-header">
+                <div className="premium-drawer-user">
+                  {isAuthenticated ? (
+                    <>
+                      <div className="premium-drawer-avatar">
+                        {user?.name?.charAt(0)?.toUpperCase() || "U"}
+                      </div>
+                      <div className="premium-drawer-user-info">
+                        <span className="premium-drawer-greeting">Welcome back,</span>
+                        <span className="premium-drawer-name">{user?.name || "User"}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="premium-drawer-guest">
+                      <div className="premium-drawer-avatar premium-drawer-avatar-guest">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <circle cx="12" cy="8" r="4" />
+                          <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
+                        </svg>
+                      </div>
+                      <span className="premium-drawer-greeting">Hello, Sign in</span>
+                    </div>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  className="premium-drawer-close"
+                  onClick={closeDrawer}
+                  aria-label="Close menu"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="premium-drawer-content">
+                {!isAuthenticated && (
+                  <div className="premium-drawer-auth">
+                    <Link to="/login" className="premium-drawer-btn premium-drawer-btn-primary" onClick={closeDrawer}>
+                      Sign In
+                    </Link>
+                    <Link to="/register" className="premium-drawer-btn premium-drawer-btn-secondary" onClick={closeDrawer}>
+                      Register
+                    </Link>
+                  </div>
+                )}
+
+                <nav className="premium-drawer-nav">
+                  {DRAWER_LINKS.map((link, index) => (
+                    <motion.button
+                      key={link.label}
+                      type="button"
+                      className="premium-drawer-link"
+                      onClick={() => handleDrawerLinkClick(link.href)}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                    >
+                      <span className="premium-drawer-link-icon">
+                        {link.icon === "grid" && (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <rect x="3" y="3" width="7" height="7" rx="1" />
+                            <rect x="14" y="3" width="7" height="7" rx="1" />
+                            <rect x="3" y="14" width="7" height="7" rx="1" />
+                            <rect x="14" y="14" width="7" height="7" rx="1" />
+                          </svg>
+                        )}
+                        {link.icon === "package" && (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M21 8v13H3V8M1 3h22v5H1V3z" />
+                            <path d="M10 12h4" />
+                          </svg>
+                        )}
+                        {link.icon === "heart" && (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                          </svg>
+                        )}
+                        {link.icon === "user" && (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <circle cx="12" cy="8" r="4" />
+                            <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
+                          </svg>
+                        )}
+                        {link.icon === "settings" && (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <circle cx="12" cy="12" r="3" />
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                          </svg>
+                        )}
+                      </span>
+                      <span className="premium-drawer-link-label">{link.label}</span>
+                    </motion.button>
+                  ))}
+                </nav>
+
+                {isAuthenticated && (
+                  <div className="premium-drawer-footer">
+                    <button
+                      type="button"
+                      className="premium-drawer-logout"
+                      onClick={() => {
+                        logout();
+                        closeDrawer();
+                        navigate("/");
+                      }}
+                      disabled={loading}
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+                      </svg>
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 

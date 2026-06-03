@@ -52,8 +52,12 @@
 
 .footer-brand-logo {
   height: 52px;
-  width: auto;
+  width: 52px;
   object-fit: contain;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px;
 }
 
 .footer-brand-text-group {

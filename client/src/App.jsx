@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
+import CookieConsent from "./components/CookieConsent";
 
 import Home from "./pages/Home";
 import Cart from "./pages/Cart";
@@ -18,6 +19,7 @@ function App() {
   return (
     <BrowserRouter>
       <div className="app-layout">
+        <CookieConsent />
         <Navbar />
         <div className="app-main">
           <Routes>

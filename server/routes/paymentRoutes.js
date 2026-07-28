@@ -3,10 +3,12 @@ const { protect } = require("../middleware/authMiddleware");
 const {
   createRazorpayOrder,
   verifyPayment,
+  testRazorpay,
 } = require("../controllers/paymentController");
 
 const router = express.Router();
 
+router.get("/test", protect, testRazorpay);
 router.post("/create-order", protect, createRazorpayOrder);
 router.post("/verify", protect, verifyPayment);
 

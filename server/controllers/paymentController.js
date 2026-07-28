@@ -36,6 +36,11 @@ exports.createRazorpayOrder = async (req, res, next) => {
       amount: Math.round(order.totalPrice * 100), // Amount in paise (1 INR = 100 paise)
       currency: "INR",
       receipt: order._id.toString(),
+      payment_capture: 1,
+      notes: {
+        orderId: order._id.toString(),
+        userId: userId?.toString(),
+      },
     };
 
     const razorpayOrder = await instance.orders.create(options);
@@ -47,6 +52,32 @@ exports.createRazorpayOrder = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       keyId: process.env.RAZORPAY_KEY_ID,
+      razorpayOrder,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// @desc    Test Razorpay credential and order creation
+// @route   GET /api/payment/test
+// @access  Private
+exports.testRazorpay = async (req, res, next) => {
+  try {
+    const instance = getRazorpayInstance();
+    const razorpayOrder = await instance.orders.create({
+      amount: 100,
+      currency: "INR",
+      receipt: `test_receipt_${Date.now()}`,
+      payment_capture: 1,
+      notes: {
+        test: true,
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Razorpay integration is working",
       razorpayOrder,
     });
   } catch (err) {
@@ -86,35 +117,42 @@ exports.verifyPayment = async (req, res, next) => {
       .update(body.toString())
       .digest("hex");
 
-    if (expectedSignature === razorpay_signature) {
-      // Mark as paid
-      order.isPaid = true;
-      order.paidAt = new Date();
-      order.razorpayPaymentId = razorpay_payment_id;
-      order.paymentResult = {
-        id: razorpay_payment_id,
-        status: "success",
-        email_address: req.user?.email,
-      };
-
-      // Progress status to Processing
-      if (order.orderStatus === "Pending") {
-        order.orderStatus = "Processing";
-      }
-
-      await order.save();
-
-      return res.status(200).json({
-        success: true,
-        message: "Payment verified successfully",
-        data: order,
-      });
-    } else {
+    if (expectedSignature !== razorpay_signature) {
       return res.status(400).json({
         success: false,
         message: "Invalid payment signature verification failed",
       });
     }
+
+    if (order.razorpayOrderId && order.razorpayOrderId !== razorpay_order_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Payment order mismatch detected",
+      });
+    }
+
+    // Mark as paid
+    order.isPaid = true;
+    order.paidAt = new Date();
+    order.razorpayPaymentId = razorpay_payment_id;
+    order.paymentResult = {
+      id: razorpay_payment_id,
+      status: "success",
+      email_address: req.user?.email,
+    };
+
+    // Progress status to Processing
+    if (order.orderStatus === "Pending") {
+      order.orderStatus = "Processing";
+    }
+
+    await order.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Payment verified successfully",
+      data: order,
+    });
   } catch (err) {
     next(err);
   }

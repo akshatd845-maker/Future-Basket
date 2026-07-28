@@ -6,6 +6,12 @@
   width: 100%;
 }
 
+.product-details-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
 .product-details-grid {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
@@ -289,8 +295,23 @@
     height: 380px;
   }
 
+  .product-info {
+    gap: 18px;
+  }
+
   .product-info .btn {
     min-height: 44px;
+  }
+}
+
+@media (max-width: 640px) {
+  .product-actions {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .product-info .btn {
+    width: 100%;
   }
 }
 

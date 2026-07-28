@@ -58,6 +58,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--sans);
+  min-width: 0;
 }
 
 .app-layout {
@@ -65,6 +66,25 @@ body {
   flex-direction: column;
   min-height: 100vh;
 }
+
+img,
+picture,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+button,
+input,
+textarea,
+select,
+a {
+  min-width: 0;
+  max-width: 100%;
+}
+
 
 .app-main {
   flex: 1;
@@ -121,6 +141,24 @@ code {
   background: var(--border);
   border-radius: var(--radius-sm);
   color: var(--text-h);
+}
+
+img,
+picture,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+button,
+input,
+textarea,
+select,
+a {
+  min-width: 0;
+  max-width: 100%;
 }
 
 /* Loading spinner */
